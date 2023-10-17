@@ -1,0 +1,39 @@
+<div class="container-fluid">
+  <div class="row">
+    <section class="col-9">
+      <ngx-graph [links]="links" [nodes]="nodes">
+        <ng-template #nodeTemplate let-node>
+          <svg xmlns="http://www.w3.org/2000/svg">
+            <g>
+              <!--        <rect [attr.width]="node.dimension.width" [attr.height]="node.dimension.height" rx="5" ry="5" [attr.fill]="node.color"></rect>-->
+              <circle [attr.cx]="node.dimension.width / 2" [attr.cy]="node.dimension.height / 2" [attr.r]="node.dimension.width / 4" [attr.fill]="node.color"></circle>
+              <text alignment-baseline="central" [attr.x]="10" [attr.y]="node.dimension.height / 2">{{node.label}}</text>
+            </g>
+          </svg>
+          <!--    <svg:g class="node" xmlns="http://www.w3.org/2000/xhtml" width="150" height="100">-->
+          <!--      <svg:foreignObject width="150" height="100">-->
+          <!--        <xhtml:div class="cardContainer" xmlns="http://www.w3.org/1999/xhtml" [ngStyle]="getStyles(node)">-->
+          <!--          <label class="name">{{ node.label }}</label>-->
+          <!--          <label>{{ node.data.role }}</label>-->
+          <!--          <label>{{ node.data.office }}</label>-->
+          <!--        </xhtml:div>-->
+          <!--      </svg:foreignObject>-->
+          <!--    </svg:g>-->
+        </ng-template>
+      </ngx-graph>
+    </section>
+    <section class="col-3" id="add-node-section">
+      <form>
+        <label for="nodeName">Node Name:</label>
+        <input type="text" id="nodeName" name="nodeName" [(ngModel)]="nodeName">
+
+        <label for="nodeColor">Node Color:</label>
+        <input type="text" id="nodeColor" name="nodeColor" [(colorPicker)]="nodeColor" [style.background]="nodeColor" [value]="nodeColor"/>
+
+        <button type="button" (click)="addNode()">Add Node</button>
+      </form>
+    </section>
+  </div>
+</div>
+
+
