@@ -7,6 +7,10 @@ import {RouterModule} from "@angular/router";
 import {NgxGraphModule} from "@swimlane/ngx-graph";
 import {ColorPickerModule} from "ngx-color-picker";
 import {FormsModule} from "@angular/forms";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatButtonModule} from "@angular/material/button";
+import {VisModule} from "ngx-vis";
 
 
 
@@ -34,7 +38,11 @@ import {FormsModule} from "@angular/forms";
     ]),
     NgxGraphModule,
     ColorPickerModule,
-    FormsModule
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    VisModule
   ]
 })
 export class NetworksModule { }

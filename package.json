@@ -22,8 +22,10 @@
     "@angular/router": "^16.2.9",
     "@swimlane/ngx-graph": "^8.2.2",
     "ngx-color-picker": "^15.0.0",
+    "ngx-vis": "^4.0.0",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
+    "vis-network": "^9.1.8",
     "zone.js": "~0.13.3"
   },
   "devDependencies": {
@@ -41,5 +43,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "typescript": "~5.1.6"
+  },
+  "overrides": {
+    "d3-selection": "3.0.0"
   }
 }

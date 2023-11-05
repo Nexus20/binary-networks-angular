@@ -1,35 +1,65 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Node, Edge, IdType, Data, Options} from "vis-network";
+import { Network } from "vis-network/peer/esm/vis-network";
+import { DataSet } from "vis-data/peer/esm/vis-data"
+import {VisNetworkService} from "ngx-vis";
 
 @Component({
   selector: 'app-networks',
   templateUrl: './networks.component.html',
   styleUrls: ['./networks.component.scss']
 })
-export class NetworksComponent {
-  public links = [
-    { id: 'a', source: 'first', target: 'second', label: 'is parent of' },
-    { id: 'b', source: 'first', target: 'third', label: 'custom label' }
-  ];
-  public nodes = [
-    { id: 'first', label: 'Node 1', color: 'red' },
-    { id: 'second', label: 'Node 2', color: 'green' },
-    { id: 'third', label: 'Node 3', color: 'blue' }
-  ];
+export class NetworksComponent implements OnInit, OnDestroy {
+  public visNetwork: string = 'networkId1';
+  public visNetworkData!: Data;
+  public nodes!: DataSet<Node>;
+  public edges!: DataSet<Edge>;
+  public visNetworkOptions!: Options;
 
-  nodeName: string = '';
-  nodeColor: string = '#0000ff'; // Default color
-
-  public getStyles(node: Node): any {
-    return {
-      // 'background-color': node.data.backgroundColor
-      'background-color': 'red'
-    };
+  public constructor(private visNetworkService: VisNetworkService) {
   }
 
-  public addNode() {
-    this.nodes.push({ id: this.nodeName, label: this.nodeName, color: this.nodeColor });
-    // Reset form
-    this.nodeName = '';
-    this.nodeColor = '#0000ff';
+  public addNode(): void {
+    const lastId = this.nodes.length;
+    const newId = this.nodes.length + 1;
+    this.nodes.add({id: newId, label: 'New Node'});
+    this.edges.add({from: lastId, to: newId});
+    this.visNetworkService.fit(this.visNetwork);
+  }
+
+  public networkInitialized(): void {
+    // now we can use the service to register on events
+    this.visNetworkService.on(this.visNetwork, 'click');
+
+    // open your console/dev tools to see the click params
+    this.visNetworkService.click.subscribe((eventData: any[]) => {
+      if (eventData[0] === this.visNetwork) {
+        // tslint:disable: no-console
+        console.log(eventData[1]);
+      }
+    });
+  }
+
+  public ngOnInit(): void {
+    this.nodes = new DataSet<Node>([
+      {id: '1', label: 'Node 1'},
+      {id: '2', label: 'Node 2'},
+      {id: '3', label: 'Node 3'},
+      {id: '4', label: 'Node 4'},
+      {id: '5', label: 'Node 5', title: 'Title of Node 5'},
+    ]);
+    this.edges = new DataSet<Edge>([
+      {from: '1', to: '2'},
+      {from: '1', to: '3'},
+      {from: '2', to: '4'},
+      {from: '2', to: '5'},
+    ]);
+    this.visNetworkData = {nodes: this.nodes, edges: this.edges};
+
+    this.visNetworkOptions = {};
+  }
+
+  public ngOnDestroy(): void {
+    this.visNetworkService.off(this.visNetwork, 'click');
   }
 }
