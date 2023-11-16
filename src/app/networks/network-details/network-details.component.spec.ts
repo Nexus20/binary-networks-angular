@@ -6,10 +6,12 @@ describe('NetworkDetailsComponent', () => {
   let component: NetworkDetailsComponent;
   let fixture: ComponentFixture<NetworkDetailsComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [NetworkDetailsComponent]
-    });
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NetworkDetailsComponent]
+    })
+    .compileComponents();
+    
     fixture = TestBed.createComponent(NetworkDetailsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

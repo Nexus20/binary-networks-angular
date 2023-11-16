@@ -1,13 +1,16 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Node, Edge, IdType, Data, Options} from "vis-network";
+import {Node, Edge, Data, Options} from "vis-network";
 import { Network } from "vis-network/peer/esm/vis-network";
 import { DataSet } from "vis-data/peer/esm/vis-data"
-import {VisNetworkService} from "ngx-vis";
+import {CommonModule} from '@angular/common';
+import {VisModule, VisNetworkService} from "ngx-vis";
 
 @Component({
   selector: 'app-networks',
+  standalone: true,
+  imports: [CommonModule, VisModule],
   templateUrl: './networks.component.html',
-  styleUrls: ['./networks.component.scss']
+  styleUrl: './networks.component.scss'
 })
 export class NetworksComponent implements OnInit, OnDestroy {
   public visNetwork: string = 'networkId1';
@@ -56,7 +59,11 @@ export class NetworksComponent implements OnInit, OnDestroy {
     ]);
     this.visNetworkData = {nodes: this.nodes, edges: this.edges};
 
-    this.visNetworkOptions = {};
+    this.visNetworkOptions = {
+      physics: {
+        enabled: false,
+      }
+    };
   }
 
   public ngOnDestroy(): void {

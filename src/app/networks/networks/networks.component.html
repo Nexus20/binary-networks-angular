@@ -1,0 +1,45 @@
+<div class="container-fluid" id="chart-container">
+  <div class="row">
+    <section class="col-9">
+      <div *ngIf="visNetworkData" id="chart">
+        <h2>Network</h2>
+        <h3>Basic usage</h3>
+        <div
+          class="network-canvas"
+          [visNetwork]="visNetwork"
+          [visNetworkData]="visNetworkData"
+          [visNetworkOptions]="visNetworkOptions"
+          (initialized)="networkInitialized()"
+        ></div>
+      </div>
+    </section>
+    <section class="col-3" id="add-node-section">
+        <button type="button" class="btn btn-default" (click)="addNode()">Add node</button>
+      <!--      <form>-->
+      <!--        <mat-form-field appearance="fill">-->
+      <!--          <mat-label>Node ID</mat-label>-->
+      <!--          <input matInput name="nodeId" [(ngModel)]="nodeId" required>-->
+      <!--        </mat-form-field>-->
+
+      <!--        <mat-form-field appearance="fill">-->
+      <!--          <mat-label>Node Label</mat-label>-->
+      <!--          <input matInput name="nodeLabel" [(ngModel)]="nodeLabel" required>-->
+      <!--        </mat-form-field>-->
+
+      <!--        <mat-form-field appearance="fill">-->
+      <!--          <mat-label>Node Color</mat-label>-->
+      <!--          <input matInput name="nodeColor" [(ngModel)]="nodeColor" required>-->
+      <!--        </mat-form-field>-->
+
+      <!--        <mat-form-field appearance="fill">-->
+      <!--          <mat-label>Node Size</mat-label>-->
+      <!--          <input matInput name="nodeSize" type="number" [(ngModel)]="nodeSize" required>-->
+      <!--        </mat-form-field>-->
+
+      <!--        <div>-->
+      <!--          <button mat-raised-button color="primary" (click)="addNode()" [disabled]="!nodeId || !nodeLabel">Add Node</button>-->
+      <!--        </div>-->
+      <!--      </form>-->
+    </section>
+  </div>
+</div>
