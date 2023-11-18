@@ -1,25 +1,10 @@
-#chart-container {
-  height: 100%;
+.network-preview-wrapper {
+    min-height: 100px;
+    max-height: 300px;
 
-  .row {
-    height: 100%;
-
-    section {
-      height: 100%;
-
-      svg.ngx-charts {
+    .network-preview {
         height: 100%;
-      }
+        width: 100%;
+        object-fit: contain;
     }
-  }
-}
-
-#chart {
-  width: 100%;
-  height: 100%;
-
-  .network-canvas {
-    width: 100%;
-    height: 100%;
-  }
 }

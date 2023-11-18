@@ -1,0 +1,13 @@
+<h1 mat-dialog-title>Edit node</h1>
+<div mat-dialog-content>
+    <form [formGroup]="editNodeForm">
+        <mat-form-field>
+            <mat-label>Node label</mat-label>
+            <input matInput formControlName="label">
+        </mat-form-field>
+    </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onDismiss()">Cancel</button>
+    <button mat-button (click)="onSave()">Save</button>
+</div>

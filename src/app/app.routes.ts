@@ -1,5 +1,6 @@
-import { Routes } from '@angular/router';
+import {Routes} from '@angular/router';
 
 export const routes: Routes = [
-  {path: 'networks', loadChildren: () => import('./networks/networks.routes')},
+    {path: '', redirectTo: '/networks', pathMatch: 'full'},
+    {path: 'networks', loadChildren: () => import('./networks/networks.routes')},
 ];

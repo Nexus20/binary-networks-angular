@@ -1,45 +1,22 @@
-<div class="container-fluid" id="chart-container">
-  <div class="row">
-    <section class="col-9">
-      <div *ngIf="visNetworkData" id="chart">
-        <h2>Network</h2>
-        <h3>Basic usage</h3>
-        <div
-          class="network-canvas"
-          [visNetwork]="visNetwork"
-          [visNetworkData]="visNetworkData"
-          [visNetworkOptions]="visNetworkOptions"
-          (initialized)="networkInitialized()"
-        ></div>
-      </div>
-    </section>
-    <section class="col-3" id="add-node-section">
-        <button type="button" class="btn btn-default" (click)="addNode()">Add node</button>
-      <!--      <form>-->
-      <!--        <mat-form-field appearance="fill">-->
-      <!--          <mat-label>Node ID</mat-label>-->
-      <!--          <input matInput name="nodeId" [(ngModel)]="nodeId" required>-->
-      <!--        </mat-form-field>-->
-
-      <!--        <mat-form-field appearance="fill">-->
-      <!--          <mat-label>Node Label</mat-label>-->
-      <!--          <input matInput name="nodeLabel" [(ngModel)]="nodeLabel" required>-->
-      <!--        </mat-form-field>-->
-
-      <!--        <mat-form-field appearance="fill">-->
-      <!--          <mat-label>Node Color</mat-label>-->
-      <!--          <input matInput name="nodeColor" [(ngModel)]="nodeColor" required>-->
-      <!--        </mat-form-field>-->
-
-      <!--        <mat-form-field appearance="fill">-->
-      <!--          <mat-label>Node Size</mat-label>-->
-      <!--          <input matInput name="nodeSize" type="number" [(ngModel)]="nodeSize" required>-->
-      <!--        </mat-form-field>-->
-
-      <!--        <div>-->
-      <!--          <button mat-raised-button color="primary" (click)="addNode()" [disabled]="!nodeId || !nodeLabel">Add Node</button>-->
-      <!--        </div>-->
-      <!--      </form>-->
-    </section>
-  </div>
-</div>
+<app-header></app-header>
+<main>
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-6 col-lg-4">
+                <div *ngIf="networks.length > 0" class="networks-list">
+                    <div class="card networks-list-item" *ngFor="let network of networks">
+                        <div class="network-preview-wrapper">
+                            <img [src]="network.previewImageUrl" class="card-img-top network-preview" alt="network-preview">
+                        </div>
+                        <div class="card-body">
+                            <h4 class="card-title">{{network.networkName}}</h4>
+                            <p class="card-text">Created at: {{network.createdAt}}</p>
+                            <p *ngIf="network.updatedAt" class="card-text">Updated at: {{network.updatedAt}}</p>
+                            <a class="btn btn-primary" [routerLink]="[network.id]">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
