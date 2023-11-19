@@ -1,30 +1,35 @@
-#chart-container {
+main {
+
     height: 100%;
 
-    .row {
+    #chart-container {
         height: 100%;
 
-        section {
+        .row {
             height: 100%;
 
-            svg.ngx-charts {
+            section {
                 height: 100%;
+
+                svg.ngx-charts {
+                    height: 100%;
+                }
             }
         }
     }
-}
 
-#chart {
-    width: 100%;
-    height: 100%;
-
-    .network-canvas {
+    #chart {
         width: 100%;
         height: 100%;
-    }
-}
 
-#edit-node-context-menu {
-    position: absolute;
-    z-index: 1000;
+        .network-canvas {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    #edit-node-context-menu {
+        position: absolute;
+        z-index: 1000;
+    }
 }

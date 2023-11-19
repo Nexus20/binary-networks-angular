@@ -23,13 +23,13 @@ export interface BinaryNetworkResult extends BinaryNetworkShortResult {
 
 export interface BinaryNetwork {
     nodes: BinaryNetworkNode[];
-    edges: BinaryNetworkEdge[];
+    edges: BinaryNetworkEdge[] | null;
 }
 
 export interface BinaryNetworkNode {
     id: number;
     label: string;
-    position: BinaryNetworkNodePosition;
+    position: BinaryNetworkNodePosition | null;
 }
 
 export interface BinaryNetworkNodePosition {

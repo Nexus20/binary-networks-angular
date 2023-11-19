@@ -2,18 +2,31 @@
 <main>
     <div class="container">
         <div class="row">
-            <div class="col-12 col-md-6 col-lg-4">
-                <div *ngIf="networks.length > 0" class="networks-list">
-                    <div class="card networks-list-item" *ngFor="let network of networks">
-                        <div class="network-preview-wrapper">
-                            <img [src]="network.previewImageUrl" class="card-img-top network-preview" alt="network-preview">
-                        </div>
-                        <div class="card-body">
-                            <h4 class="card-title">{{network.networkName}}</h4>
-                            <p class="card-text">Created at: {{network.createdAt}}</p>
-                            <p *ngIf="network.updatedAt" class="card-text">Updated at: {{network.updatedAt}}</p>
-                            <a class="btn btn-primary" [routerLink]="[network.id]">Details</a>
-                        </div>
+            <div class="col-12">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" (click)="OpenCreateNewNetworkDialog()">Create new
+                        network
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" (click)="OpenImportNetworkDialog()">Import network
+                        from file
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="networks.length > 0" class="row networks-list">
+            <div class="networks-list-item col-12 col-md-6 col-lg-4" *ngFor="let network of networks">
+                <div class="card">
+                    <div class="network-preview-wrapper">
+                        <img [src]="network.previewImageUrl ?? 'assets/images/no-image.png'"
+                             class="card-img-top network-preview" alt="network-preview">
+                    </div>
+                    <div class="card-body">
+                        <h4 class="card-title">{{network.networkName}}</h4>
+                        <p class="card-text">Created at: {{network.createdAt}}</p>
+                        <p *ngIf="network.updatedAt" class="card-text">Updated at: {{network.updatedAt}}</p>
+                        <a class="btn btn-primary" [routerLink]="[network.id]">Details</a>
                     </div>
                 </div>
             </div>

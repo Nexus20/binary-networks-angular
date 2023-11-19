@@ -1,10 +1,18 @@
 <app-header></app-header>
 <main>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div *ngIf="visNetworkData">
+                    <h2>Network: {{network.networkName}}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid" id="chart-container">
         <div class="row">
             <section class="col-9">
                 <div *ngIf="visNetworkData" id="chart">
-                    <h2>Network</h2>
                     <div
                         #visNetworkCanvas
                         class="network-canvas"
@@ -16,15 +24,21 @@
                 </div>
             </section>
             <section class="col-3" id="add-node-section">
-                <div>
+                <div class="mb-3">
                     <button type="button" class="btn btn-outline-primary" (click)="SaveNetwork()">Save network</button>
                 </div>
-                <div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-primary" (click)="ExportNetwork()">Export network</button>
+                </div>
+                <div class="mb-3">
                     <button type="button"
                             [className]="'btn btn-outline-primary' + (currentNetworkMode == 1 ? ' active' : '')"
                             (click)="toggleEditNodesMode()">Toggle edit nodes mode
                     </button>
+                </div>
+                <div>
                     <button type="button"
+                            [disabled]="nodes.length < 2"
                             [className]="'btn btn-outline-primary' + (currentNetworkMode == 2 ? ' active' : '')"
                             (click)="toggleEditEdgesMode()">Toggle edit edges mode
                     </button>
@@ -80,6 +94,6 @@
     >
         <button type="button" class="btn btn-outline-primary" (click)="openCreateNodeDialog()">Attach node</button>
         <button type="button" class="btn btn-outline-primary" (click)="openEditNodeDialog()">Edit</button>
-        <button type="button" class="btn btn-outline-danger" (click)="openDeleteNodeDialog()">Delete</button>
+        <button type="button" class="btn btn-outline-danger" [disabled]="nodes.length == 1" (click)="openDeleteNodeDialog()">Delete</button>
     </div>
 </main>

@@ -11,7 +11,12 @@ import {CreateNodeDialogComponent} from "../components/create-node-dialog/create
 import {EditNodeDialogComponent} from "../components/edit-node-dialog/edit-node-dialog.component";
 import {DeleteNodeDialogComponent} from "../components/delete-node-dialog/delete-node-dialog.component";
 import {DeleteEdgeDialogComponent} from "../components/delete-edge-dialog/delete-edge-dialog.component";
-import {BinaryNetworkNode, SaveBinaryNetworkRequest} from "../../models/binaryNetwork";
+import {
+    BinaryNetworkEdge,
+    BinaryNetworkNode,
+    BinaryNetworkResult,
+    SaveBinaryNetworkRequest
+} from "../../models/binaryNetwork";
 import {NetworkModes} from "../networks/networks.component";
 import {MatInputModule} from "@angular/material/input";
 import {FormsModule} from "@angular/forms";
@@ -43,6 +48,9 @@ import {ActivatedRoute} from "@angular/router";
     styleUrl: './network-details.component.scss'
 })
 export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit {
+
+    public network!: BinaryNetworkResult;
+
     public visNetworkName: string = 'networkId1';
     public visNetworkData!: Data;
     public nodes!: DataSet<Node>;
@@ -61,7 +69,6 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     public secondNode: Node | null = null;
 
     public selectedEdge: Edge | null = null;
-    public screenshotUrl: string | null = null;
 
     @ViewChild('visNetworkCanvas') visNetworkCanvas!: ElementRef<HTMLElement>;
     @ViewChild('screenshot') screenshot!: ElementRef<HTMLElement>;
@@ -160,22 +167,6 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
             }
         });
 
-        // this.visNetworkService.on(this.visNetwork, 'oncontext', true);
-
-        // this.visNetworkService.oncontext.subscribe((eventData: any[]) => {
-        //     if (eventData[0] === this.visNetwork) {
-        //
-        //     }
-        // });
-
-        // // open your console/dev tools to see the click params
-        // this.visNetworkService.click.subscribe((eventData: any[]) => {
-        //     if (eventData[0] === this.visNetwork) {
-        //         // tslint:disable: no-console
-        //         console.log(eventData[1]);
-        //     }
-        // });
-
         this.visNetworkService.selectNode.subscribe((eventData: any[]) => {
 
             if (eventData[0] === this.visNetworkName) {
@@ -239,34 +230,12 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
     public ngOnInit(): void {
 
-        this.nodes = new DataSet<Node>([
-            {id: 1, label: 'Node 1'},
-            {id: 2, label: 'Node 2'},
-            {id: 3, label: 'Node 3'},
-            {id: 4, label: 'Node 4'},
-            {id: 5, label: 'Node 5'},
-        ]);
-        this.edges = new DataSet<Edge>([
-            {from: 1, to: 2},
-            {from: 1, to: 3},
-            {from: 2, to: 4},
-            {from: 2, to: 5},
-        ]);
-        this.visNetworkData = {nodes: this.nodes, edges: this.edges};
+        this.activatedRoute.data.subscribe(({network}) => {
 
-        this.visNetworkOptions = {
-            physics: {
-                enabled: false,
-            },
-            interaction: {
-                selectable: true,
-                selectConnectedEdges: false,
-            },
-            edges: {
-                physics: false,
-                smooth: false
-            }
-        };
+            this.network = network;
+
+            this.InitializeNetworkData();
+        });
     }
 
     public ngOnDestroy(): void {
@@ -317,7 +286,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
                 const newId = this.nodes.length + 1; // ID для нового узла
                 this.nodes.add({id: newId, label: result.label});
                 this.edges.add({from: this.selectedNodeId!, to: newId}); // Создаем ребро от выбранного узла к новому
-                this.visNetworkService.fit(this.visNetworkName);
+                // this.visNetworkService.fit(this.visNetworkName);
             }
 
             this.contextMenuVisible = false;
@@ -422,8 +391,106 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         const imageBase64 = canvas.toDataURL('image/png');
         console.log(imageBase64);
 
-        const request: SaveBinaryNetworkRequest = {
-            id: null,
+        const request = this.CreateSaveNetworkRequest(imageBase64);
+        console.log(request);
+
+        this.networksService.saveNetwork(request).subscribe(
+            {
+                next: () => {
+                    this.snackBar.open('Network saved', 'Close', {
+                        duration: 3000,
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
+                    });
+                },
+                error: (error) => {
+                    console.log(error);
+                    this.snackBar.open('Error while saving network', 'Close', {
+                        duration: 3000,
+                        horizontalPosition: 'right',
+                        verticalPosition: 'bottom',
+                    });
+                }
+            }
+        );
+    }
+
+    private InitializeNetworkData() {
+
+        this.nodes = new DataSet<Node>(this.network.network.nodes.map((node: BinaryNetworkNode) => {
+
+            const result: Node = {id: node.id, label: node.label};
+
+            if (node.position) {
+                result.x = node.position.x;
+                result.y = node.position.y;
+            }
+
+            return result;
+        }));
+
+        if (!this.network.network.edges)
+            this.network.network.edges = [];
+
+        this.edges = new DataSet<Edge>(this.network.network.edges.map((edge: BinaryNetworkEdge) => {
+            return {from: edge.from, to: edge.to};
+        }));
+
+        this.visNetworkData = {nodes: this.nodes, edges: this.edges};
+        this.visNetworkName = this.network.networkName;
+
+        this.visNetworkOptions = {
+            height: '100%',
+            physics: {
+                enabled: false,
+            },
+            interaction: {
+                selectable: true,
+                selectConnectedEdges: false,
+            },
+            edges: {
+                physics: false,
+                smooth: false
+            }
+        };
+    }
+
+    ExportNetwork() {
+
+        if (!this.visNetworkCanvas)
+            return;
+
+        const canvas = this.visNetworkCanvas.nativeElement.getElementsByTagName('canvas')[0];
+        const imageBase64 = canvas.toDataURL('image/png');
+        console.log(imageBase64);
+
+        const request = this.CreateSaveNetworkRequest(imageBase64);
+
+        this.networksService.exportNetworkAsJson(request).subscribe({
+            next: (blob : Blob) => {
+
+                if(blob.size == 0) {
+                    console.error('Blob size is 0');
+                    return;
+                }
+
+                const url = window.URL.createObjectURL(blob);
+                const anchor = document.createElement('a');
+                anchor.href = url;
+                anchor.download = 'network.json';
+                anchor.click();
+                window.URL.revokeObjectURL(url);
+            },
+            error: (error) => {
+                console.error(error);
+            }
+        });
+    }
+
+    private CreateSaveNetworkRequest(imageBase64: string | null): SaveBinaryNetworkRequest {
+
+        return {
+            id: this.network.id,
             network: {
                 nodes: this.nodes.map(node => {
 
@@ -445,11 +512,5 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
             networkName: this.visNetworkName,
             previewImageBase64: imageBase64
         };
-
-        console.log(request);
-
-        this.networksService.saveNetwork(request).subscribe(result => {
-            console.log(result);
-        });
     }
 }
