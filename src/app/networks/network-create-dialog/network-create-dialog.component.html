@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Create new network</h2>
+<mat-dialog-content>
+    <form [formGroup]="createNetworkForm">
+        <div>
+            <mat-form-field>
+                <mat-label>Network name</mat-label>
+                <input matInput formControlName="networkName" name="networkName">
+            </mat-form-field>
+        </div>
+        <div>
+            <mat-form-field>
+                <mat-label>First node name</mat-label>
+                <input matInput formControlName="firstNodeName" name="firstNodeName">
+            </mat-form-field>
+        </div>
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onCreate()" [disabled]="!createNetworkForm.valid">Confirm</button>
+</mat-dialog-actions>

@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Import network</h2>
+<mat-dialog-content>
+    <input type="file" (change)="onFileSelected($event)">
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onImport()" [disabled]="!selectedFile">Import</button>
+</mat-dialog-actions>
