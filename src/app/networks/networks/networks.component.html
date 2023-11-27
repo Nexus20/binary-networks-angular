@@ -24,8 +24,8 @@
                     </div>
                     <div class="card-body">
                         <h4 class="card-title">{{network.networkName}}</h4>
-                        <p class="card-text">Created at: {{network.createdAt}}</p>
-                        <p *ngIf="network.updatedAt" class="card-text">Updated at: {{network.updatedAt}}</p>
+                        <p class="card-text">Created at: {{network.createdAt | date: 'medium'}}</p>
+                        <p *ngIf="network.updatedAt" class="card-text">Updated at: {{network.updatedAt | date: 'medium'}}</p>
                         <a class="btn btn-primary" [routerLink]="[network.id]">Details</a>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {MatButtonModule} from "@angular/material/button";
 import {Data, Edge, Node, Options} from "vis-network";
@@ -25,7 +25,11 @@ import {CdkContextMenuTrigger, CdkMenu, CdkMenuItem} from "@angular/cdk/menu";
 import {MatListModule} from "@angular/material/list";
 import {HttpClientModule} from "@angular/common/http";
 import {HeaderComponent} from "../../shared/header/header.component";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {DeleteNetworkDialogComponent} from "../components/delete-network-dialog/delete-network-dialog.component";
+import {FaIconComponent} from "@fortawesome/angular-fontawesome";
+import {faPenToSquare} from "@fortawesome/free-solid-svg-icons";
+import {RenameNetworkDialogComponent} from "../components/rename-network-dialog/rename-network-dialog.component";
 
 @Component({
     selector: 'app-network-details',
@@ -42,7 +46,8 @@ import {ActivatedRoute} from "@angular/router";
         CdkMenuItem,
         MatListModule,
         HttpClientModule,
-        HeaderComponent
+        HeaderComponent,
+        FaIconComponent
     ],
     templateUrl: './network-details.component.html',
     styleUrl: './network-details.component.scss'
@@ -63,37 +68,29 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     public selectedNodeId: number | null = null;
 
     public currentNetworkMode: NetworkModes = NetworkModes.Default;
-    public newNodeLabel: string = '';
 
     public firstNode: Node | null = null;
     public secondNode: Node | null = null;
 
     public selectedEdge: Edge | null = null;
 
+    private unsavedChanges : boolean = false;
+
     @ViewChild('visNetworkCanvas') visNetworkCanvas!: ElementRef<HTMLElement>;
     @ViewChild('screenshot') screenshot!: ElementRef<HTMLElement>;
 
-    public constructor(private visNetworkService: VisNetworkService, public dialog: MatDialog, private snackBar: MatSnackBar, private networksService: NetworksService, private activatedRoute: ActivatedRoute) {
+    public constructor(private visNetworkService: VisNetworkService, public dialog: MatDialog, private snackBar: MatSnackBar, private networksService: NetworksService, private activatedRoute: ActivatedRoute, private router: Router) {
     }
 
-    public addNode(): void {
-
-        if (this.currentNetworkMode !== NetworkModes.EditNodes)
-            return;
-
-        if (this.selectedNodeId == null) {
-            alert('Please select a node to connect with the new node.');
-            return;
-        } else {
-            const newId = this.nodes.length + 1; // ID для нового узла
-            this.nodes.add({id: newId, label: this.newNodeLabel});
-            this.edges.add({from: this.selectedNodeId, to: newId}); // Создаем ребро от выбранного узла к новому
-            this.visNetworkService.fit(this.visNetworkName);
-
-            this.selectedNodeId = null; // Сброс выбранного узла после добавления
-            this.visNetworkService.unselectAll(this.visNetworkName);
-            this.newNodeLabel = '';
+    @HostListener('window:beforeunload', ['$event'])
+    unloadNotification($event: any) {
+        if (this.hasUnsavedChanges()) {
+            $event.returnValue = true;
         }
+    }
+
+    public hasUnsavedChanges() : boolean {
+        return this.unsavedChanges;
     }
 
     addEdge() {
@@ -122,6 +119,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
                 from: this.firstNode.id,
                 to: this.secondNode.id
             });
+            this.unsavedChanges = true;
         }
 
         this.firstNode = null;
@@ -141,8 +139,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.visNetworkService.on(this.visNetworkName, 'deselectEdge');
 
 
-        this.visNetworkService.zoom.subscribe((eventData: any[]) => {
-            console.log(eventData);
+        this.visNetworkService.zoom.subscribe(() => {
             this.contextMenuVisible = false;
             this.visNetworkService.unselectAll(this.visNetworkName);
             this.selectedNodeId = null;
@@ -233,8 +230,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.activatedRoute.data.subscribe(({network}) => {
 
             this.network = network;
-
-            this.InitializeNetworkData();
+            this.initializeNetworkData();
         });
     }
 
@@ -246,8 +242,9 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.currentNetworkMode = this.currentNetworkMode === NetworkModes.EditNodes ? NetworkModes.Default : NetworkModes.EditNodes;
         console.log('toggleEditNodesMode', this.currentNetworkMode.toString());
 
+        this.visNetworkService.unselectAll(this.visNetworkName);
+
         if (this.currentNetworkMode === NetworkModes.Default) {
-            this.visNetworkService.unselectAll(this.visNetworkName);
             this.selectedNodeId = null;
             this.contextMenuVisible = false;
         }
@@ -258,8 +255,9 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.currentNetworkMode = this.currentNetworkMode === NetworkModes.EditEdges ? NetworkModes.Default : NetworkModes.EditEdges;
         console.log('toggleEditNodesEdges', this.currentNetworkMode.toString());
 
+        this.visNetworkService.unselectAll(this.visNetworkName);
+
         if (this.currentNetworkMode === NetworkModes.Default) {
-            this.visNetworkService.unselectAll(this.visNetworkName);
             this.selectedNodeId = null;
             this.contextMenuVisible = false;
         }
@@ -283,10 +281,10 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         dialogRef.afterClosed().subscribe(result => {
 
             if (result) {
-                const newId = this.nodes.length + 1; // ID для нового узла
+                const newId = (this.nodes.max('id')?.id as number) + 1; // ID для нового узла
                 this.nodes.add({id: newId, label: result.label});
                 this.edges.add({from: this.selectedNodeId!, to: newId}); // Создаем ребро от выбранного узла к новому
-                // this.visNetworkService.fit(this.visNetworkName);
+                this.unsavedChanges = true;
             }
 
             this.contextMenuVisible = false;
@@ -314,6 +312,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
             if (result) {
                 this.nodes.update({id: this.selectedNodeId!, label: result.label});
+                this.unsavedChanges = true;
             }
 
             this.contextMenuVisible = false;
@@ -334,6 +333,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
             if (result && this.selectedNodeId) {
                 this.deleteNode(this.selectedNodeId);
+                this.unsavedChanges = true;
             }
 
             this.contextMenuVisible = false;
@@ -358,6 +358,31 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.visNetworkService.fit(this.visNetworkName);
     }
 
+    deleteNetwork() {
+        const dialogRef = this.dialog.open(DeleteNetworkDialogComponent, {
+            width: '250px',
+            data: { /* данные для диалога, если нужны */}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.networksService.deleteNetwork(this.network.id).subscribe({
+                    next: () => {
+                        this.router.navigate(['/networks']);
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        this.snackBar.open('Error while deleting network', 'Close', {
+                            duration: 3000,
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     openDeleteEdgeDialog() {
 
         const dialogRef = this.dialog.open(DeleteEdgeDialogComponent, {
@@ -369,6 +394,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
             if (result && this.selectedEdge) {
                 this.deleteEdge();
+                this.unsavedChanges = true;
             }
         });
     }
@@ -382,7 +408,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.selectedEdge = null;
     }
 
-    public SaveNetwork(): void {
+    public saveNetwork(): void {
 
         if (!this.visNetworkCanvas)
             return;
@@ -391,7 +417,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         const imageBase64 = canvas.toDataURL('image/png');
         console.log(imageBase64);
 
-        const request = this.CreateSaveNetworkRequest(imageBase64);
+        const request = this.createSaveNetworkRequest(imageBase64);
         console.log(request);
 
         this.networksService.saveNetwork(request).subscribe(
@@ -402,6 +428,8 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
                         horizontalPosition: 'right',
                         verticalPosition: 'bottom',
                     });
+
+                    this.unsavedChanges = false;
                 },
                 error: (error) => {
                     console.log(error);
@@ -415,7 +443,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         );
     }
 
-    private InitializeNetworkData() {
+    private initializeNetworkData() {
 
         this.nodes = new DataSet<Node>(this.network.network.nodes.map((node: BinaryNetworkNode) => {
 
@@ -455,7 +483,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         };
     }
 
-    ExportNetwork() {
+    public exportNetwork() {
 
         if (!this.visNetworkCanvas)
             return;
@@ -464,7 +492,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         const imageBase64 = canvas.toDataURL('image/png');
         console.log(imageBase64);
 
-        const request = this.CreateSaveNetworkRequest(imageBase64);
+        const request = this.createSaveNetworkRequest(imageBase64);
 
         this.networksService.exportNetworkAsJson(request).subscribe({
             next: (blob : Blob) => {
@@ -487,7 +515,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         });
     }
 
-    private CreateSaveNetworkRequest(imageBase64: string | null): SaveBinaryNetworkRequest {
+    private createSaveNetworkRequest(imageBase64: string | null): SaveBinaryNetworkRequest {
 
         return {
             id: this.network.id,
@@ -512,5 +540,32 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
             networkName: this.visNetworkName,
             previewImageBase64: imageBase64
         };
+    }
+
+    protected readonly faPenToSquare = faPenToSquare;
+
+    renameNetwork() {
+        const dialogRef = this.dialog.open(RenameNetworkDialogComponent, {
+            width: '250px',
+            data: {currentNetworkName: this.network.networkName}
+        });
+
+        dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+                this.networksService.renameNetwork(this.network.id, result.networkName).subscribe({
+                    next: () => {
+                        this.network.networkName = result.networkName;
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        this.snackBar.open('Error while renaming network', 'Close', {
+                            duration: 3000,
+                            horizontalPosition: 'right',
+                            verticalPosition: 'bottom',
+                        });
+                    }
+                });
+            }
+        });
     }
 }

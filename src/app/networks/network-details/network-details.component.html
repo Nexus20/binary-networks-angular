@@ -4,7 +4,10 @@
         <div class="row">
             <div class="col-12">
                 <div *ngIf="visNetworkData">
-                    <h2>Network: {{network.networkName}}</h2>
+                    <h2>
+                        Network: {{network.networkName}} &nbsp;
+                        <button class="btn btn-primary" (click)="renameNetwork()"><fa-icon [icon]="faPenToSquare"></fa-icon></button>
+                    </h2>
                 </div>
             </div>
         </div>
@@ -23,64 +26,70 @@
                     ></div>
                 </div>
             </section>
-            <section class="col-3" id="add-node-section">
-                <div class="mb-3">
-                    <button type="button" class="btn btn-outline-primary" (click)="SaveNetwork()">Save network</button>
-                </div>
-                <div class="mb-3">
-                    <button type="button" class="btn btn-outline-primary" (click)="ExportNetwork()">Export network</button>
-                </div>
-                <div class="mb-3">
-                    <button type="button"
-                            [className]="'btn btn-outline-primary' + (currentNetworkMode == 1 ? ' active' : '')"
-                            (click)="toggleEditNodesMode()">Toggle edit nodes mode
-                    </button>
-                </div>
-                <div>
-                    <button type="button"
-                            [disabled]="nodes.length < 2"
-                            [className]="'btn btn-outline-primary' + (currentNetworkMode == 2 ? ' active' : '')"
-                            (click)="toggleEditEdgesMode()">Toggle edit edges mode
-                    </button>
-                </div>
-                <!--            <div *ngIf="currentNetworkMode == 1" class="add-node-form-wrapper">-->
-                <!--                <form>-->
-                <!--                    <mat-form-field appearance="fill">-->
-                <!--                        <mat-label>Название узла</mat-label>-->
-                <!--                        <input matInput placeholder="Введите название" [(ngModel)]="newNodeLabel" name="newNodeLabel">-->
-                <!--                    </mat-form-field>-->
-                <!--                    <div>-->
-                <!--                        <button mat-raised-button color="primary" (click)="addNode()"-->
-                <!--                                [disabled]="!newNodeLabel || !selectedNodeId">-->
-                <!--                            Add Node-->
-                <!--                        </button>-->
-                <!--                    </div>-->
-                <!--                </form>-->
-                <!--            </div>-->
+            <section class="col-3" id="node-controls-section">
 
-                <div *ngIf="currentNetworkMode == 2" class="add-edge-form-wrapper">
-
-                    <div>First node:
-                        <span *ngIf="firstNode">
-                        {{firstNode.label}}
-                    </span>
+                <div class="card mb-3" id="network-actions-card">
+                    <div class="card-header">
+                        Network actions
                     </div>
-                    <div>Second node:
-                        <span *ngIf="secondNode">
-                        {{secondNode.label}}
-                    </span>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-primary" (click)="saveNetwork()">Save network</button>
+                        </div>
+                        <div class="mb-3">
+                            <button type="button" class="btn btn-outline-primary" (click)="exportNetwork()">Export network
+                            </button>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-danger" (click)="deleteNetwork()">Delete network
+                            </button>
+                        </div>
                     </div>
+                </div>
 
-                    <button mat-raised-button color="primary" (click)="addEdge()"
-                            [disabled]="!firstNode || !secondNode">
-                        Add Edge
-                    </button>
+                <div class="card mb-3" id="edit-network-card">
+                    <div class="card-header">
+                        Edit your network
+                    </div>
+                    <div class="card-body">
 
-                    <div>
-                        <button mat-raised-button color="primary" (click)="openDeleteEdgeDialog()"
-                                [disabled]="!selectedEdge">
-                            Delete Edge
-                        </button>
+                        <div class="mb-3">
+                            <button type="button"
+                                    [className]="'btn btn-outline-primary' + (currentNetworkMode == 1 ? ' active' : '')"
+                                    (click)="toggleEditNodesMode()">Toggle edit nodes mode
+                            </button>
+                        </div>
+
+                        <div>
+                            <button type="button"
+                                    [disabled]="nodes.length < 2"
+                                    [className]="'btn btn-outline-primary' + (currentNetworkMode == 2 ? ' active' : '')"
+                                    (click)="toggleEditEdgesMode()">Toggle edit edges mode
+                            </button>
+                        </div>
+
+                        <div *ngIf="currentNetworkMode == 2" class="add-edge-form-wrapper mt-3">
+
+                            <div class="mb-2">First node:
+                                <span *ngIf="firstNode">{{firstNode.label}}</span>
+                            </div>
+                            <div class="mb-3">Second node:
+                                <span *ngIf="secondNode">{{secondNode.label}}</span>
+                            </div>
+
+                            <div class="mb-2">
+                                <button mat-raised-button color="primary" (click)="addEdge()"
+                                        [disabled]="!firstNode || !secondNode">
+                                    Add Edge
+                                </button>
+                            </div>
+                            <div>
+                                <button mat-raised-button color="primary" (click)="openDeleteEdgeDialog()"
+                                        [disabled]="!selectedEdge">
+                                    Delete Edge
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -94,6 +103,8 @@
     >
         <button type="button" class="btn btn-outline-primary" (click)="openCreateNodeDialog()">Attach node</button>
         <button type="button" class="btn btn-outline-primary" (click)="openEditNodeDialog()">Edit</button>
-        <button type="button" class="btn btn-outline-danger" [disabled]="nodes.length == 1" (click)="openDeleteNodeDialog()">Delete</button>
+        <button *ngIf="nodes.length > 1" type="button" class="btn btn-outline-danger" [disabled]="nodes.length == 1"
+                (click)="openDeleteNodeDialog()">Delete
+        </button>
     </div>
 </main>

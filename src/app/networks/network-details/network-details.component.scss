@@ -32,4 +32,13 @@ main {
         position: absolute;
         z-index: 1000;
     }
+
+    #edit-network-card,#network-actions-card {
+
+        .card-body {
+            button {
+                width: 100%;
+            }
+        }
+    }
 }

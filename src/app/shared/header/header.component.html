@@ -9,34 +9,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                    <ng-template [ngIf]="!isUserAuthenticated">-->
-<!--                        <li class="nav-item"><a class="nav-link" [routerLink]="['/users/login']">{{'header.login' | translate}}</a></li>-->
-<!--                    </ng-template>-->
-<!--                    <ng-template [ngIf]="isUserAuthenticated">-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" [routerLink]="['/profile']">{{'header.profile' | translate}}</a>-->
-<!--                        </li>-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" [routerLink]="['/phases']">{{'header.phases' | translate}}</a>-->
-<!--                        </li>-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" [routerLink]="['/parameters']">{{'header.parameters' | translate}}</a>-->
-<!--                        </li>-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" [routerLink]="['/grape-sorts']">{{'header.grape-sorts' | translate}}</a>-->
-<!--                        </li>-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" [routerLink]="['/sensors']">{{'header.sensors' | translate}}</a>-->
-<!--                        </li>-->
-<!--                        <ng-container *ngIf="isUserAdmin">-->
-<!--                            <li class="nav-item">-->
-<!--                                <a class="nav-link" [routerLink]="['/users']">{{'header.users' | translate}}</a>-->
-<!--                            </li>-->
-<!--                        </ng-container>-->
-<!--                        <li class="nav-item">-->
-<!--                            <a class="nav-link" style="cursor: pointer;" (click)="logout()">{{'header.logout' | translate}}</a>-->
-<!--                        </li>-->
-<!--                    </ng-template>-->
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" [routerLink]="['/networks']">Networks</a>
+                    </li>
                 </ul>
             </div>
         </div>
