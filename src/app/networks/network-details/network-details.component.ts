@@ -150,7 +150,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
                 console.log('select edge', eventData[1]);
 
                 if (this.currentNetworkMode === NetworkModes.EditEdges) {
-                    const edgeId = eventData[1].edges[0]; // Предполагаем, что выделена одна грань
+                    const edgeId = eventData[1].edges[0]; // We assume that one face is selected
                     this.selectedEdge = this.edges.get(edgeId);
                 }
             }
@@ -177,7 +177,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
                         this.contextMenuVisible = true;
                         this.contextMenuPosition.x = eventData[1].pointer.DOM.x + 'px';
                         this.contextMenuPosition.y = eventData[1].pointer.DOM.y + 'px';
-                        this.selectedNodeId = eventData[1].nodes[0]; // Сохраняем выбранный узел
+                        this.selectedNodeId = eventData[1].nodes[0]; // Save the selected node
                     }
                 } else if (this.currentNetworkMode === NetworkModes.EditEdges) {
 
@@ -206,7 +206,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         this.visNetworkService.deselectNode.subscribe((eventData: any) => {
 
             if (eventData[0] === this.visNetworkName) {
-                this.selectedNodeId = null; // Сброс выбранного узла
+                this.selectedNodeId = null; // Reset selected node
 
                 if (this.currentNetworkMode === NetworkModes.EditNodes) {
                     this.contextMenuVisible = false;
@@ -281,9 +281,9 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
         dialogRef.afterClosed().subscribe(result => {
 
             if (result) {
-                const newId = (this.nodes.max('id')?.id as number) + 1; // ID для нового узла
+                const newId = (this.nodes.max('id')?.id as number) + 1; // ID for new node
                 this.nodes.add({id: newId, label: result.label});
-                this.edges.add({from: this.selectedNodeId!, to: newId}); // Создаем ребро от выбранного узла к новому
+                this.edges.add({from: this.selectedNodeId!, to: newId}); //Create an edge from the selected node to a new one
                 this.unsavedChanges = true;
             }
 
@@ -324,7 +324,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     openDeleteNodeDialog(): void {
         const dialogRef = this.dialog.open(DeleteNodeDialogComponent, {
             width: '250px',
-            data: { /* данные для диалога, если нужны */}
+            data: {}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -343,7 +343,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     }
 
     deleteNode(nodeId: number): void {
-        // Удалить все рёбра, связанные с удаляемым узлом
+        // Delete all edges associated with the node being deleted
         const connectedEdges = this.edges.get({
             filter: function (edge) {
                 return edge.from === nodeId || edge.to === nodeId;
@@ -352,7 +352,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
         this.edges.remove(connectedEdges.map(edge => edge.id));
 
-        // Удалить сам узел
+        // Delete the node itself
         this.nodes.remove(nodeId);
 
         this.visNetworkService.fit(this.visNetworkName);
@@ -361,7 +361,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
     deleteNetwork() {
         const dialogRef = this.dialog.open(DeleteNetworkDialogComponent, {
             width: '250px',
-            data: { /* данные для диалога, если нужны */}
+            data: {}
         });
 
         dialogRef.afterClosed().subscribe(result => {
@@ -387,7 +387,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
 
         const dialogRef = this.dialog.open(DeleteEdgeDialogComponent, {
             width: '250px',
-            data: { /* данные для диалога, если нужны */}
+            data: {}
         });
 
         dialogRef.afterClosed().subscribe(result => {
