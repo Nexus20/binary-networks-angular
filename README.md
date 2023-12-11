@@ -1,6 +1,7 @@
-# BinaryNetworksAngular
+# Binary Networks Frontend
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.0.
+This repository contains the frontend code for the binary logical network management system. The backend can be found at: https://github.com/Nexus20/binary-networks-backend
+<br>The project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.0.0.
 
 ## Development server
 
