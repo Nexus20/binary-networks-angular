@@ -88,7 +88,7 @@ export class NetworkDetailsComponent implements OnInit, OnDestroy, AfterViewInit
             $event.returnValue = true;
         }
     }
-
+    
     public hasUnsavedChanges() : boolean {
         return this.unsavedChanges;
     }
